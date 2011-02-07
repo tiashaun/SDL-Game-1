@@ -14,6 +14,11 @@ EngineFramework::EngineFramework()
     m_iCurrentFPS = 0;
     m_iFPSCounter = 0;
 
+    //these two variables should be initiallzed inside of the mygame class, not the framework class.
+    //if the user of this framework doesn't want to limit the framerate, then dont
+    //m_iFPSLimit = 60;
+    //m_bLimitFPS = true;
+
     m_bMinimized = false;
 }
 
@@ -60,7 +65,10 @@ void EngineFramework::Start() {
             DoRender();
         }
 
-        SDL_Delay(1);
+        //limit the frame rate
+        if ( m_bLimitFPS && m_iElapsedTicks < 1000 / m_iFPSLimit ) {
+            SDL_Delay((1000/m_iFPSLimit) - m_iElapsedTicks);
+        }
     }
 
     End();
@@ -131,12 +139,12 @@ void EngineFramework::HandleInput() {
 }
 
 void EngineFramework::DoThink() {
-    long iElapsedTicks = SDL_GetTicks() - m_lLastTick;
+    m_iElapsedTicks = SDL_GetTicks() - m_lLastTick;
     m_lLastTick = SDL_GetTicks();
 
-    Think( iElapsedTicks );
+    Think( m_iElapsedTicks );
 
-    m_iFPSTickCounter += iElapsedTicks;
+    m_iFPSTickCounter += m_iElapsedTicks;
 }
 
 void EngineFramework::DoRender() {

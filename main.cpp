@@ -57,6 +57,9 @@ int main(int argc, char* argv[]) {
 }
 
 void MyGame::AdditionalInit() {
+    //limit the fps to 60 fps
+    m_iFPSLimit = 10;
+    m_bLimitFPS = true;
     player.Init("data/animations/xeon_animation.xml");
 }
 

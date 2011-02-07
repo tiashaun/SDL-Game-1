@@ -63,6 +63,9 @@ class EngineFramework
         void SetSize(const int& iWidth, const int& iHeight);
 
         void HandleInput();
+
+        int m_iFPSLimit;
+        bool m_bLimitFPS;
     private:
         long m_lLastTick;
 
@@ -70,6 +73,7 @@ class EngineFramework
         int m_iFPSTickCounter;
         int m_iFPSCounter;
         int m_iCurrentFPS;
+        long m_iElapsedTicks;
 
         bool m_bQuit;
         bool m_bMinimized;
