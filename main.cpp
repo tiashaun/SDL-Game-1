@@ -4,6 +4,7 @@
 //#include <boost/lexical_cast.hpp>
 
 #include "Entity.h"
+#include "Maps/Map.h"
 
 /* I will be making a level editor soon... */
 
@@ -42,6 +43,7 @@ public:
 
 private:
     Entity player;
+    Map debugMap;
 };
 
 int main(int argc, char* argv[]) {
@@ -60,9 +62,11 @@ int main(int argc, char* argv[]) {
 
 void MyGame::AdditionalInit() {
     //limit the fps to 60 fps
-    m_iFPSLimit = 10;
+    m_iFPSLimit = 60;
     m_bLimitFPS = true;
     player.Init("data/animations/xeon_animation.xml");
+
+    debugMap.LoadMap("data/maps/debug.xml");
 }
 
 void MyGame::Think(const int& iElapsedTime) {
@@ -71,6 +75,8 @@ void MyGame::Think(const int& iElapsedTime) {
 
 void MyGame::Render(SDL_Surface* pDestSurface) {
     player.Draw( pDestSurface );
+
+    debugMap.Draw( pDestSurface );
 
     //std::string val = boost::lexical_cast<std::string>(GetFPS());
     //val = "FPS: " + val;

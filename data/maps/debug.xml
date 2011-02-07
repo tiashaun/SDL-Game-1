@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+	<Map name="Debug Level">
+		<imagesheet id="0" image="data/images/dirt-tiles.png" colorkeyR="111" colorkeyG="109" colorkeyB="81" spriteSize="16"/>
+		
+		<Layer type="images">
+			<structure imagesheetID="0" imagesheetRow="0" imagesheetColumn="0" posX="50" posY="50"/>
+			<structure imagesheetID="0" imagesheetRow="0" imagesheetColumn="0" posX="66" posY="50"/>
+			<structure imagesheetID="0" imagesheetRow="0" imagesheetColumn="0" posX="82" posY="50"/>
+		</Layer>
+	</Map>
+</xml>
