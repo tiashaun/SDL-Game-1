@@ -5,6 +5,8 @@
 
 #include "Entity.h"
 
+/* I will be making a level editor soon... */
+
 class MyGame : public EngineFramework {
 public:
 
