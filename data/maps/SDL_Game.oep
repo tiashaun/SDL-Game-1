@@ -1,0 +1,38 @@
+<project>
+	<name>SDL Game</name>
+	<settings>
+		<defaultWidth>1280</defaultWidth>
+		<defaultHeight>720</defaultHeight>
+		<workingDirectory>data/images</workingDirectory>
+	</settings>
+	
+	<values>
+		<string name="title" default="new level" maxChars="12" />
+	</values>
+	
+	<tilesets>
+		<tileset name="dirt-tiles" image="dirt-tiles.png" tileWidth="16" tileHeight="16">
+			<colorKey red="111" green="109" blue="81"/>
+		</tileset>
+		<tileset name="bricks" image="tiles_bricks.png" tileWidth="16" tileHeight="16">
+			<colorKey red="0" green="0" blue="0"/>
+		</tileset>
+	</tilesets>
+	
+	<objects>
+		<object name="ogmo" image="ogmo.png" width="16" height="16" limit="1" />
+		<folder name="dangers">
+			<object name="spikes" image="spikes.png" width="16" height="16" resizableX="true" tile="true">
+				<values>
+					<integer name="damage" default="1" min="1" max="5"/>
+				</values>
+			</object>
+		</folder>
+	</objects>
+	
+	<layers>
+		<grid name="collisionObjects" gridSize="8" exportAsObjects="true" exportTileSize="true" />
+		<objects name="actors" gridSize="16" />
+		<tiles name="mapTiles" gridSize="16" exportTileSize="true" />
+	</layers>
+</project>

@@ -5,7 +5,7 @@ EngineFramework::EngineFramework()
 {
     m_lLastTick = 0;
     m_iWidth = 640;
-    m_iHeight = 640;
+    m_iHeight = 480;
     m_cTitle = 0;
 
     m_pScreen = 0;
@@ -30,7 +30,7 @@ EngineFramework::~EngineFramework()
 void EngineFramework::SetSize(const int& iWidth, const int& iHeight) {
     m_iWidth = iWidth;
     m_iHeight = iHeight;
-    m_pScreen = SDL_SetVideoMode(iWidth, iHeight, 0, SDL_SWSURFACE);
+    m_pScreen = SDL_SetVideoMode(iWidth, iHeight, 32, SDL_SWSURFACE);
 }
 
 void EngineFramework::Init() {
