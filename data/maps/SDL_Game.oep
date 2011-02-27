@@ -3,7 +3,8 @@
 	<settings>
 		<defaultWidth>1280</defaultWidth>
 		<defaultHeight>720</defaultHeight>
-		<workingDirectory>data/images</workingDirectory>
+		<workingDirectory>../../data/images</workingDirectory>
+		<gameWorkingDir>data/images</gameWorkingDir>
 	</settings>
 	
 	<values>
@@ -16,6 +17,9 @@
 		</tileset>
 		<tileset name="bricks" image="tiles_bricks.png" tileWidth="16" tileHeight="16">
 			<colorKey red="0" green="0" blue="0"/>
+		</tileset>
+		<tileset name="generic-big" image="sidescroll.png" tileWidth="32" tileHeight="32">
+			<colorKey red="255" green="255" blue="255"/>
 		</tileset>
 	</tilesets>
 	
@@ -33,6 +37,6 @@
 	<layers>
 		<grid name="collisionObjects" gridSize="8" exportAsObjects="true" exportTileSize="true" />
 		<objects name="actors" gridSize="16" />
-		<tiles name="mapTiles" gridSize="16" exportTileSize="true" />
+		<tiles name="mapTiles" gridSize="32" exportTileSize="true" />
 	</layers>
 </project>

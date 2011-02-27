@@ -3,6 +3,7 @@
 
 #include <SDL/SDL.h>
 #include <string>
+#include <Box2D/Box2D.h>
 
 #include "AnimationSet.h"
 
@@ -30,6 +31,9 @@ class Entity
 
         void SetAnimation(std::string sAnimation);
 
+        void InitPhysics(b2World *physicsWorld);
+        b2Body* GetBody();
+
     protected:
     private:
         int m_iX, m_iY;
@@ -43,6 +47,13 @@ class Entity
 
         AnimationSet m_asAnimations;
         std::string m_sCurrentAnimation;
+
+        //box2d stuff...
+        b2BodyDef m_b2BodyDef;
+        b2Body*  m_b2Body;
+        b2PolygonShape m_b2DynamicBox;
+        b2FixtureDef m_b2FixtureDef;
+
 };
 
 #endif // ENTITY_H

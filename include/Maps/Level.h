@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <SDL/SDL.h>
+#include <Box2D/Box2D.h>
 
 #include "Maps/Layer.h"
 #include "Maps/Tileset.h"
@@ -20,6 +21,8 @@ class Level
         void LoadProjectSettings(std::string projectSettingsFileName);
         void LoadLevel(std::string levelFileName);
         SDL_Surface* LoadImage(std::string fileName, int colorKeyR, int colorKeyG, int colorKeyB);
+
+        void SetPhysicsCollisionRects(b2World* world);
 
         void Draw ( SDL_Surface* pDest );
     protected:

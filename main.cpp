@@ -1,7 +1,7 @@
 #include "include/EngineFramework.h"
 #include <stdlib.h>
 #include <iostream>
-//#include <boost/lexical_cast.hpp>
+#include <Box2D/Box2D.h>
 
 #include "Entity.h"
 #include "Maps/Level.h"
@@ -45,6 +45,15 @@ private:
     Entity player;
     Level debugLevel;
 
+    //Box2D World
+    b2Vec2 m_v2Gravity;
+    bool m_bDoSleep;
+    b2World *m_b2PhysicsWorld;
+
+    //temp box2d ground. after prototyping it will be apart of the level or something
+    //b2BodyDef groundBodyDef;
+    //b2PolygonShape groundBox;
+    //b2Body* groundBody;
 };
 
 int main(int argc, char* argv[]) {
@@ -67,16 +76,34 @@ void MyGame::AdditionalInit() {
     m_bLimitFPS = true;
     player.Init("data/animations/xeon_animation.xml");
 
+    m_v2Gravity = b2Vec2(0.0f, -15.0f);
+    m_bDoSleep = true;
+    m_b2PhysicsWorld = new b2World(m_v2Gravity, m_bDoSleep);
+
     debugLevel.LoadProjectSettings("data/maps/SDL_Game.oep");
     debugLevel.LoadLevel("data/maps/Debug Level.oel");
+    debugLevel.SetPhysicsCollisionRects(m_b2PhysicsWorld);
+
+
+    //groundBodyDef.position.Set(0, -200.0f * 0.1);
+    //groundBody = m_b2PhysicsWorld->CreateBody(&groundBodyDef);
+    //groundBox.SetAsBox(300, 2);
+    //groundBody->CreateFixture(&groundBox, 0.0f);
+
+    player.InitPhysics(m_b2PhysicsWorld);
 }
 
 void MyGame::Think(const int& iElapsedTime) {
+    float fPhysicsTimeStep = 1.0f / 60.0f;
+    int iVelocityIterations = 10, iPositionIterations = 20;
+
+    m_b2PhysicsWorld->Step(fPhysicsTimeStep, iVelocityIterations, iPositionIterations);
+    m_b2PhysicsWorld->ClearForces();
+
     player.Think( iElapsedTime );
 }
 
 void MyGame::Render(SDL_Surface* pDestSurface) {
-
     debugLevel.Draw( pDestSurface );
     player.Draw( pDestSurface );
 }
@@ -85,19 +112,26 @@ void MyGame::KeyDown(const int& iKeyEnum) {
     switch( iKeyEnum ) {
     case SDLK_a:
         player.SetAnimation("Walking");
-        player.AddXVelocity(-player.GetSpeed());
+        player.GetBody()->ApplyForce(b2Vec2(-400.0f, 0), player.GetBody()->GetPosition());
+        //player.GetBody()->SetLinearVelocity(b2Vec2(-10.0f, 0));
+        //player.AddXVelocity(-player.GetSpeed());
         break;
     case SDLK_d:
         player.SetAnimation("Walking");
-        player.AddXVelocity(player.GetSpeed());
+        player.GetBody()->ApplyForce(b2Vec2(400.0f, 0.0f), player.GetBody()->GetPosition());
+        //player.GetBody()->SetLinearVelocity(b2Vec2(10.0f, 0));
+        //player.AddXVelocity(player.GetSpeed());
         break;
     case SDLK_w:
         player.SetAnimation("Walking");
-        player.AddYVelocity(-player.GetSpeed());
+        //player.AddYVelocity(-player.GetSpeed());
         break;
     case SDLK_s:
         player.SetAnimation("Walking");
-        player.AddYVelocity(player.GetSpeed());
+        //player.AddYVelocity(player.GetSpeed());
+        break;
+    case SDLK_SPACE:
+        player.GetBody()->ApplyLinearImpulse(b2Vec2(0, 150.0f), player.GetBody()->GetPosition());
         break;
     default:
         break;
@@ -108,19 +142,23 @@ void MyGame::KeyUp(const int& iKeyEnum) {
     switch( iKeyEnum ) {
     case SDLK_a:
         player.SetAnimation("Standing");
-        player.AddXVelocity(player.GetSpeed());
+        //player.AddXVelocity(player.GetSpeed());
+        //player.GetBody()->SetLinearVelocity(b2Vec2(-0.0f, 0));
         break;
     case SDLK_d:
         player.SetAnimation("Standing");
-        player.AddXVelocity(-player.GetSpeed());
+        //player.AddXVelocity(-player.GetSpeed());
+        //player.GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0));
         break;
     case SDLK_w:
         player.SetAnimation("Standing");
-        player.AddYVelocity(player.GetSpeed());
+        //player.AddYVelocity(player.GetSpeed());
         break;
     case SDLK_s:
         player.SetAnimation("Standing");
         player.AddYVelocity(-player.GetSpeed());
+        break;
+    case SDLK_SPACE:
         break;
     default:
         break;
@@ -161,5 +199,6 @@ void MyGame::WindowActive()
 
 void MyGame::End()
 {
+    delete m_b2PhysicsWorld;
 	// Clean up
 }

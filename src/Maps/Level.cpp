@@ -5,9 +5,11 @@
 #include <vector>
 #include <SDL/SDL_image.h>
 #include <iostream>
+#include <Box2D/Box2D.h>
 
 #include "Maps/Tile.h"
 #include "Maps/Layer.h"
+#include "Maps/CollisionRect.h"
 
 Level::Level()
 {
@@ -19,8 +21,10 @@ Level::~Level()
     //dtor
 }
 
-void Level::Draw ( SDL_Surface* pDest ) {
-    for ( unsigned int i = 0; i < m_vRenderLayers.size(); i++ ) {
+void Level::Draw ( SDL_Surface* pDest )
+{
+    for ( unsigned int i = 0; i < m_vRenderLayers.size(); i++ )
+    {
         Layer tempLayer = m_vRenderLayers.at(i);
         //first get the tileset
         std::string tileset1;
@@ -33,7 +37,8 @@ void Level::Draw ( SDL_Surface* pDest ) {
         int tileWidth = tempLayer.GetTileWidth();
         int tileHeight = tempLayer.GetTileHeight();
 
-        for ( unsigned int j = 0; j < tiles.size(); j++ ) {
+        for ( unsigned int j = 0; j < tiles.size(); j++ )
+        {
             Tile tempTile = tiles.at(j);
             SDL_Rect clip;
             clip.x = tempTile.GetTileX();
@@ -46,7 +51,8 @@ void Level::Draw ( SDL_Surface* pDest ) {
     }
 }
 
-void Level::ApplySurface(int iX, int iY, SDL_Surface* pSource, SDL_Surface* pDestination, SDL_Rect* clip = NULL) {
+void Level::ApplySurface(int iX, int iY, SDL_Surface* pSource, SDL_Surface* pDestination, SDL_Rect* clip = NULL)
+{
     SDL_Rect offset;
 
     offset.x = iX;
@@ -55,7 +61,8 @@ void Level::ApplySurface(int iX, int iY, SDL_Surface* pSource, SDL_Surface* pDes
     SDL_BlitSurface(pSource, clip, pDestination, &offset);
 }
 
-void Level::LoadProjectSettings(std::string projectSettingsFileName) {
+void Level::LoadProjectSettings(std::string projectSettingsFileName)
+{
     TiXmlDocument doc(projectSettingsFileName.c_str());
     if ( !doc.LoadFile()) return;
 
@@ -63,14 +70,19 @@ void Level::LoadProjectSettings(std::string projectSettingsFileName) {
 
     std::string workingDirString;
 
-    for ( TiXmlElement* node = root->FirstChildElement(); node; node = node->NextSiblingElement()) {
+    for ( TiXmlElement* node = root->FirstChildElement(); node; node = node->NextSiblingElement())
+    {
         std::string value = node->Value();
-        if ( value == "settings" ) {
-            TiXmlElement* workingDir = node->FirstChildElement()->NextSiblingElement()->NextSiblingElement();
+        if ( value == "settings" )
+        {
+            TiXmlElement* workingDir = node->FirstChildElement()->NextSiblingElement()->NextSiblingElement()->NextSiblingElement();
             workingDirString = workingDir->GetText();
 
-        } else if ( value == "tilesets" ) {
-            for ( TiXmlElement* tileset = node->FirstChildElement(); tileset; tileset = tileset->NextSiblingElement()) {
+        }
+        else if ( value == "tilesets" )
+        {
+            for ( TiXmlElement* tileset = node->FirstChildElement(); tileset; tileset = tileset->NextSiblingElement())
+            {
                 std::string tilesetName = tileset->Attribute("name");
                 std::string tilesetImage = tileset->Attribute("image");
                 int ckr, ckg, ckb;
@@ -88,7 +100,8 @@ void Level::LoadProjectSettings(std::string projectSettingsFileName) {
     }
 }
 
-SDL_Surface* Level::LoadImage(std::string fileName, int colorKeyR, int colorKeyG, int colorKeyB) {
+SDL_Surface* Level::LoadImage(std::string fileName, int colorKeyR, int colorKeyG, int colorKeyB)
+{
     //The image that's loaded
     SDL_Surface* loadedImage = NULL;
 
@@ -120,29 +133,56 @@ SDL_Surface* Level::LoadImage(std::string fileName, int colorKeyR, int colorKeyG
     return optimizedImage;
 }
 
-void Level::LoadLevel(std::string levelFileName) {
+void Level::LoadLevel(std::string levelFileName)
+{
     TiXmlDocument doc(levelFileName.c_str());
     if (!doc.LoadFile()) return;
 
     TiXmlElement *root = doc.RootElement();
 
-    for (TiXmlElement* layer = root->FirstChildElement(); layer; layer = layer->NextSiblingElement()) {
+    for (TiXmlElement* layer = root->FirstChildElement(); layer; layer = layer->NextSiblingElement())
+    {
         std::string value = layer->Value();
+        Layer tempLayer;
         //ignore width/height
         if ( value == "width" || value == "height")
             continue;
 
-        //ignore collision objects and actors for now.
-        if ( value == "collisionObjects" || value == "actors")
+        //ignore actors for now.
+        if ( value == "actors")
             continue;
 
-        if ( value == "mapTiles") {
+        if ( value == "collisionObjects" )
+        {
+            std::vector<CollisionRect> vCollRect;
+
+            for (TiXmlElement* rect = layer->FirstChildElement(); rect; rect = rect->NextSiblingElement())
+            {
+                int x = atoi(rect->Attribute("x"));
+                int y = atoi(rect->Attribute("y"));
+                int w = atoi(rect->Attribute("w"));
+                int h = atoi(rect->Attribute("h"));
+
+                CollisionRect cr;
+                cr.SetiHeight(h);
+                cr.SetiWidth(w);
+                cr.SetiPosX(x);
+                cr.SetiPosY(y);
+                vCollRect.push_back(cr);
+            }
+
+            tempLayer.SetCollRect(vCollRect);
+        }
+
+        if ( value == "mapTiles")
+        {
             std::string tilesetName = layer->Attribute("set");
             int tileWidth = atoi(layer->Attribute("tileWidth"));
             int tileHeight = atoi(layer->Attribute("tileWidth"));
 
             std::vector<Tile> vTiles;
-            for ( TiXmlElement* tile = layer->FirstChildElement(); tile; tile = tile->NextSiblingElement()) {
+            for ( TiXmlElement* tile = layer->FirstChildElement(); tile; tile = tile->NextSiblingElement())
+            {
                 Tile tempTile;
 
                 tempTile.SetTileX(atoi(tile->Attribute("tx")));
@@ -153,13 +193,53 @@ void Level::LoadLevel(std::string levelFileName) {
                 vTiles.push_back(tempTile);
             }
 
-            Layer tempLayer;
             tempLayer.SetTileSet(tilesetName);
             tempLayer.SetTileHeight(tileHeight);
             tempLayer.SetTileWidth(tileWidth);
             tempLayer.SetTiles(vTiles);
 
-            m_vRenderLayers.push_back(tempLayer);
+        }
+        m_vRenderLayers.push_back(tempLayer);
+    }
+}
+
+void Level::SetPhysicsCollisionRects(b2World* world)
+{
+    for ( unsigned int i = 0; i < m_vRenderLayers.size(); i++ )
+    {
+        Layer tempLayer = m_vRenderLayers.at(i);
+
+        //get the collision rects
+        std::vector<CollisionRect> vCollRect = tempLayer.GetCollRect();
+
+        //for each collision rect
+        for ( unsigned int i = 0; i < vCollRect.size(); i++ )
+        {
+            //get the coll rect
+            CollisionRect tempRect = (CollisionRect)vCollRect.at(i);
+
+            //get all of the rects info
+            //i need to convert pixels to meters... divide by 10
+            //i also need to invert the y coord... fucking sdl
+            int x = tempRect.GetiPosX() * 0.1f;
+            int y = -(tempRect.GetiPosY() * 0.1f);
+            int width = tempRect.GetiWidth() * 0.1f;
+            int height = tempRect.GetiHeight() * 0.1f;
+
+            //get its Box2D position(the middle of it)
+            int box2D_xPos = x + (width/2);
+            int box2D_yPos = y + (height/2)+(16*.1f);
+
+            //make its physical properties
+            b2BodyDef bodyDef;
+            b2Body*  body;
+            b2PolygonShape rectBox;
+
+            bodyDef.position.Set(box2D_xPos, box2D_yPos);
+            body = world->CreateBody(&bodyDef); //add it to the world
+
+            rectBox.SetAsBox(width/2, height/2);
+            body->CreateFixture(&rectBox, 0.0f);
         }
     }
 }

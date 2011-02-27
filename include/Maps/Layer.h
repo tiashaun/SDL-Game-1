@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Maps/Tile.h"
+#include "Maps/CollisionRect.h"
 
 class Layer
 {
@@ -40,6 +41,9 @@ class Layer
 
         void SetTiles(std::vector<Tile> vTiles);
         std::vector<Tile> GetTiles();
+
+        void SetCollRect(std::vector<CollisionRect> vCollRect);
+        std::vector<CollisionRect> GetCollRect();
     protected:
     private:
         std::string m_sTileSet; //!< Member variable "m_sTileSet"
@@ -47,6 +51,7 @@ class Layer
         int m_iTileHeight; //!< Member variable "m_iTileHeight"
 
         std::vector<Tile> m_vTiles;
+        std::vector<CollisionRect> m_vCollRect;
 };
 
 #endif // LAYER_H
